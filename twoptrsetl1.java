@@ -295,6 +295,69 @@ public class twoptrsetl1 {
         return dp[sr][sc] = count;
     }
 
+    //=========================================================================================
+
+    //lc 64 min path sum in a grid using memoization and tabulation
+    public static void minPathSum(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[][] dir = {{0, 1}, {1, 0}};
+        int[][] dp = new int[m][n];
+        System.out.println(minPath_tab(grid, dir, dp, 0, 0, m - 1, n - 1));
+        //display2D(dp);
+    }
+    
+    public static int minPath(int[][] grid, int sr, int sc, int er, int ec, int[][] dp, int[][] dir) {
+        int m = grid.length, n = grid[0].length;
+        if(sr == er && sc == ec) {
+            return dp[sr][sc] = grid[er][ec];
+        }
+        
+        if(dp[sr][sc] != 0) {
+            return dp[sr][sc];
+        }
+        
+        int min = (int)1e9;
+        
+        for(int d = 0; d < dir.length; d++) {
+            int r = sr + dir[d][0], c = sc + dir[d][1];
+            if(r >= 0 && c >= 0 && r < m && c < n) {
+                min = Math.min(min, minPath(grid, r, c, er, ec, dp, dir) + grid[sr][sc]);
+            }
+        }
+        
+        return dp[sr][sc] = min;
+    }
+
+    public static int minPath_tab(int[][] grid, int[][] dir, int[][] dp, int SR, int SC, int ER, int EC) {
+        int m = grid.length, n = grid[0].length;
+        for(int sr = ER; sr >= SR; sr--) {
+            for(int sc = EC; sc >= SC; sc--) {
+                if(sr == ER && sc == EC) {
+                    dp[sr][sc] = grid[sr][sc];
+                    continue;
+                }
+                
+                int min = (int)1e9;
+                
+                for(int d = 0; d < dir.length; d++) {
+                    int r = sr + dir[d][0], c = sc + dir[d][1];
+                    if(r >= 0 && c >= 0 && r < m && c < n) {
+                        min = Math.min(min, minPath(grid, r, c, ER, EC, dp, dir) + grid[sr][sc]);
+                    }
+                }
+                
+                dp[sr][sc] = min;
+            }
+        }
+
+        return dp[0][0];
+    }
+
+    public static void fun5() {
+        int[][] grid = {{1, 3, 1}, {1, 5, 1}, {4, 2, 1}};
+        minPathSum(grid);
+    }
+
 
     
     public static void main(String[] args) {
@@ -302,7 +365,8 @@ public class twoptrsetl1 {
         //fun1(); //min cost climbing stairs
         //fun2(); // board path using dice;
         //fun3(); //maze path with one jump
-        fun4(); //maze path with infinite jumps
+        //fun4(); //maze path with infinite jumps
+        fun5(); //maze path with min sum
     }
 
 }
