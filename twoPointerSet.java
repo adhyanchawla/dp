@@ -1,6 +1,5 @@
 public class twoPointerSet {
     
-
     public static void display(int[] dp) {
         for(int ele : dp) {
             System.out.print(ele + " ");
