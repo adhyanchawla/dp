@@ -358,7 +358,137 @@ public class twoptrsetl1 {
         minPathSum(grid);
     }
 
+    //======================================================================================
+    //friends pair
+    public static int friendsPair(int n, int[] dp) {
+        return friendPair_opti(n);
+    }
 
+    public static int friendPair(int n, int[] dp) {
+        if(n <= 1) {
+            return dp[n] = 1;
+        }
+
+        if(dp[n] != 0) {
+            return dp[n];
+        }
+
+        int count = friendPair(n - 1, dp) + friendPair(n - 2, dp) * (n - 1);
+
+        return dp[n] = count;
+    }
+
+    public static int friendPair_tab(int n, int[] dp) {
+
+        for(int i = 0; i <= n; i++) {
+            if(i <= 1) {
+                dp[i] = 1;
+                continue;
+            }
+
+            int count = dp[i - 1] + dp[i - 2] * (i - 1);
+            dp[i] = count;
+        }
+
+        return dp[n];
+    }
+
+    public static int friendPair_opti(int n) {
+        int a = 1, b = 1;
+        for(int i = 2; i <= n; i++) {
+            int count = b + a *(i - 1);
+            a = b;
+            b = count;
+        }
+
+        return b;
+    }
+
+    public static void fun6() {
+        int n = 4;
+        int[] dp = new int[n + 1];
+        System.out.println(friendsPair(n, dp));
+        //display(dp);
+    }
+
+    //===============================================================================================
+    
+    public static int maxGold(int n, int m, int M[][])
+    {
+        int[][] dir = {{0, 1}, {-1, 1}, {1, 1}};
+        int[][] dp = new int[n][m];
+
+        for(int[] d : dp) Arrays.fill(d, -1);
+        
+        // int max = 0;
+        // for(int i = 0; i < n; i++) {
+        //     max = Math.max(max, maximum(M, i, 0, n - 1, m - 1, dp, dir));
+        // }
+        System.out.println(maximum_tab(M, dp, dir));        
+        display2D(dp);
+        return maximum_tab(M, dp, dir);
+        // code here
+    }
+    
+    
+    public static int maximum(int[][] board, int sr, int sc, int er, int ec, int[][] dp, int[][] dir) {
+        int m = board.length, n = board[0].length;
+        if(sc == ec) {
+            return dp[sr][sc] = board[sr][sc];
+        }
+        
+        if(dp[sr][sc] != 0) {
+            return dp[sr][sc];
+        }
+        
+        int max = 0;
+        
+        for(int d = 0; d < dir.length; d++) {
+            int r = sr + dir[d][0], c = sc + dir[d][1];
+            if(r >= 0 && c >= 0 && r <= m - 1 && c <= n - 1) {
+                max = Math.max(max, maximum(board, r, c, er, ec, dp, dir) + board[sr][sc]);
+            }
+        }
+        
+        return dp[sr][sc] = max;
+    }
+
+    public static int maximum_tab(int[][] board, int[][]dp, int[][] dir) {
+        int m = board.length, n = board[0].length;
+        for(int sc = board[0].length - 1; sc >= 0; sc--) {
+            for(int sr = 0; sr < board.length; sr++) {
+                if(sc == board[0].length - 1) {
+                    dp[sr][sc] = board[sr][sc];
+                    continue;
+                }
+
+                int max = 0;
+                for(int d = 0; d < dir.length; d++) {
+                    int r = sr + dir[d][0], c = sc + dir[d][1];
+                    if(r >= 0 && c >= 0 && r <= m - 1 && c <= n - 1) {
+                        max = Math.max(max, dp[r][c] + board[sr][sc]);
+                    }
+                }
+
+                dp[sr][sc] = max;
+            }
+        } 
+        
+        int fmax = 0;
+        for(int i = 0; i < board.length; i++) {
+            fmax = Math.max(fmax, dp[i][0]);
+        }
+
+        return fmax;
+    }
+
+    public static void fun7() {
+        int[][] M = {{1, 3, 3}, {2, 1, 4}, {0, 6, 4}};
+        System.out.println(maxGold(M.length, M[0].length, M));
+    }
+
+    //===============================================================================================
+    
     
     public static void main(String[] args) {
         //fun(); // fibonacci
@@ -366,7 +496,8 @@ public class twoptrsetl1 {
         //fun2(); // board path using dice;
         //fun3(); //maze path with one jump
         //fun4(); //maze path with infinite jumps
-        fun5(); //maze path with min sum
+        //fun5(); //maze path with min sum
+        //fun6(); //friendsPair
+        fun7(); //goldmine gfg
     }
-
 }
