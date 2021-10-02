@@ -222,9 +222,90 @@ public class stringsetl1 {
         return dp[N][M];
     }
 
+    //===============================================================================================================================
+    //lc 72. edit distance
+
+    public static void minDistance(String word1, String word2) {
+        int n = word1.length(), m = word2.length();
+        int[][] dp = new int[n + 1][m + 1];
+        
+        // for(int[] d : dp) {
+        //     Arrays.fill(d, -1);
+        // }
+        
+        System.out.println(editDistance_dp(word1, word2, n, m, dp));
+        display2D(dp);
+    }
+    
+    public static int editDistance(String s1, String s2, int n, int m, int[][] dp) {
+        if(n == 0 || m == 0) {
+            return dp[n][m] = (n == 0) ? m : n;
+        }
+        
+        if(dp[n][m] != -1) {
+            return dp[n][m];
+        }
+        
+        if(s1.charAt(n - 1) == s2.charAt(m - 1)) return dp[n][m] = editDistance(s1, s2, n - 1, m - 1, dp); 
+        else {
+            return dp[n][m] = 1 + Math.min(editDistance(s1, s2, n, m - 1, dp), Math.min(editDistance(s1, s2, n - 1, m - 1, dp), editDistance(s1, s2, n - 1, m, dp)));
+        }
+    }
+
+    public static int editDistance_dp(String s1, String s2, int N, int M, int[][] dp) {
+        //int n = s1.length(), m = s2.length();
+        for(int n = 0; n <= N; n++) {
+            for(int m = 0; m <= M; m++) {
+                if(n == 0 || m == 0) {
+                    if(n == 0 || m == 0) {
+                        dp[n][m] = (n == 0) ? m : n;
+                        continue;
+                    }
+                }
+
+                if(s1.charAt(n - 1) == s2.charAt(m - 1)) {
+                    dp[n][m] = dp[n - 1][ m - 1];
+                    continue;
+                } else {
+                    dp[n][m] = 1 + Math.min(dp[n][m - 1], Math.min(dp[n - 1][m], dp[n-1][m-1]));
+                }
+            }
+        }
+
+        return dp[N][M];
+    }
+
+    //===============================================================================================================================
+    //lc 583. deletion operation of two strings
+    public static int minDistance2(String word1, String word2) {
+        int n = word1.length(), m = word2.length();
+        int[][] dp = new int[n + 1][m + 1];
+        
+        for(int[]d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        return delete(word1, word2, n, m, dp);
+    }
+    
+    public static int delete(String s1, String s2, int n, int m, int[][] dp) {
+        if(n == 0 || m == 0) {
+            return dp[n][m] = (n == 0 ? m : n);
+        }
+        
+        if(dp[n][m] != -1) {
+            return dp[n][m];
+        }
+        
+        if(s1.charAt(n - 1) == s2.charAt(m - 1)) return dp[n][m] = delete(s1, s2, n - 1, m - 1, dp); else {
+            return dp[n][m] = 1 + Math.min(delete(s1, s2, n - 1, m, dp), delete(s1, s2, n, m - 1, dp));
+        }
+    }
+
     public static void main(String[] args) {
         //longestPalindromicSubsequnce();
         //longestPalindromicSubstring();
-        longestCommonSubsequence();
+        //longestCommonSubsequence();
+        //minDistance("saturday", "sunday"); //edit distance lc 72
     }
 }
