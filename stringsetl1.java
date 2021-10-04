@@ -302,6 +302,77 @@ public class stringsetl1 {
         }
     }
 
+    //===========================================================================================================
+    //min cost to perform insert replace delete operations given cost matrix {2,1,2}
+    public static int minCostTraversal(String s1, String s2, int N, int M, int[][] dp, int[] cost) {
+        for(int n = 0; n <= N; n++) {
+            for(int m = 0; m <= M; m++) {
+                if(n == 0 || m == 0) {
+                    dp[n][m] = (n == 0) ? m * cost[0]: n * cost[2];
+                    continue;
+                }
+
+                int insert = dp[n][m - 1];
+                int replace = dp[n - 1][m - 1];
+                int delete = dp[n - 1][m];
+
+                if(s1.charAt(n - 1) == s2.charAt(m - 1)) {
+                    dp[n][m] = replace;
+                } else {
+                    dp[n][m] = Math.min(insert + cost[0], Math.min(replace + cost[1], delete + cost[2]));
+                }
+            }
+        }
+
+        return dp[N][M];
+    }
+
+    //===============================================================================================================
+    //EDIT DISTANCE VARIATION
+    //https://www.geeksforgeeks.org/edit-distance-and-lcs-longest-common-subsequence/
+    //where we are allowed only two operations insert and delete, find edit distance in this variation
+    public static int editlcss(String s1, String s2, int N, int M, int[][] dp) {
+        for(int n = 0; n <= N; n++) {
+            for(int m = 0; m <= M; m++) {
+                if(n == 0 || m == 0) {
+                    dp[n][m] = 0;
+                    continue;
+                }
+        
+                if(s1.charAt(n - 1) == s2.charAt(m - 1)) {
+                    dp[n][m] = dp[n - 1][m - 1] + 1;
+                } else {
+                    dp[n][m] = Math.max(dp[n - 1][m], dp[n][m - 1]);
+                }
+            }
+        }
+        
+        return dp[N][M];
+    }
+
+    //=================================================================================================================
+    //min delete reqd to make a string palindrome
+    public static void minDeleteToMakeStringPalindrome(String str, int I, int J, int[][] dp) {
+        int n = str.length();
+        for(int gap = 0; gap < n; gap++) {
+            for(int i = 0, j = gap; i < n && j < n; i++, j++) {
+                if(gap == 0) {
+                    dp[i][j] = (i == j) ? 1 : 0;
+                    continue;
+                }
+
+                if(str.charAt(i) == str.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i][j - 1], dp[i + 1][j]);
+                }
+            }
+        }
+
+        int ans = n - dp[I][J];
+
+    }
+
     public static void main(String[] args) {
         //longestPalindromicSubsequnce();
         //longestPalindromicSubstring();
