@@ -331,6 +331,14 @@ public class stringsetl1 {
     //EDIT DISTANCE VARIATION
     //https://www.geeksforgeeks.org/edit-distance-and-lcs-longest-common-subsequence/
     //where we are allowed only two operations insert and delete, find edit distance in this variation
+
+    public static void editDistanceVariation(String s1, String s2) {
+        int n = s1.length(), m = s2.length();
+        int[][] dp = new int[n + 1][m + 1];
+        int ans = n - editlcss(s1, s2, n, m, dp) + m - editlcss(s1, s2, n, m, dp);
+    }
+
+
     public static int editlcss(String s1, String s2, int N, int M, int[][] dp) {
         for(int n = 0; n <= N; n++) {
             for(int m = 0; m <= M; m++) {
@@ -347,7 +355,7 @@ public class stringsetl1 {
             }
         }
         
-        return dp[N][M];
+        return (N - 1) - dp[N][M] + (M - 1) + dp[N][M];
     }
 
     //=================================================================================================================
