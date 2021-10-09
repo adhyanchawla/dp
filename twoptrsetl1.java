@@ -487,6 +487,82 @@ public class twoptrsetl1 {
         System.out.println(maxGold(M.length, M[0].length, M));
     }
 
+
+    //===============================================================================================
+
+    public static void numDecodings(String s) {
+        int[]dp = new int[s.length() + 1];
+        //Arrays.fill(dp , -1);
+        System.out.println(decodeWays_tab(s, dp, s.length()));
+        display(dp);
+    }
+    
+    
+    public static int decodeWays(String s, int idx, int[] dp) {
+        if(idx == 0) {
+            return dp[idx] = 1;
+        }
+        
+        if(dp[idx] != -1) {
+            return dp[idx];
+        }
+
+        if(s.charAt(idx - 1) == '0') {
+            return dp[idx] = 0;
+        }
+        
+        int count = 0;
+        
+        char ch = s.charAt(idx - 1);
+        if(ch - '0' != 0) {
+            count += decodeWays(s, idx - 1, dp);
+        }
+        
+        if(idx > 1) {
+            int num = (ch - '0') + (s.charAt(idx - 2) - '0') * 10;
+            if(num >= 10 && num <= 26) {
+                count += decodeWays(s, idx - 2, dp);
+            }
+        }
+        
+        return dp[idx] = count;
+    }
+
+
+    public static int decodeWays_tab(String s, int[] dp, int N) {
+        for(int n = 0; n <= N; n++) {
+            if(n == 0) {
+                dp[n] = 1;
+                continue;
+            }
+
+    
+            if(s.charAt(n - 1) == '0') {
+                dp[n] = 0;
+                continue;
+            }
+            
+            int count = 0;
+            
+            char ch = s.charAt(n - 1);
+            if(ch - '0' != 0) {
+                count += dp[n - 1];
+            }
+            
+            if(n > 1) {
+                int num = (ch - '0') + (s.charAt(n - 2) - '0') * 10;
+                if(num >= 10 && num <= 26) {
+                    count += dp[n - 2];
+                }
+            }
+            
+            dp[n] = count;
+
+        }
+        
+        return dp[N];
+    }
+
     //===============================================================================================
     
     
@@ -498,6 +574,7 @@ public class twoptrsetl1 {
         //fun4(); //maze path with infinite jumps
         //fun5(); //maze path with min sum
         //fun6(); //friendsPair
-        fun7(); //goldmine gfg
+        //fun7(); //goldmine gfg
+        numDecodings("226");
     }
 }
