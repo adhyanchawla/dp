@@ -17,17 +17,19 @@ public class stringsetl1 {
     //==================================================================================
 
     public static void longestPalindromicSubsequnce() {
-        String str = "peeeeeeeeeeeeep";
-        String[][]dp = new String[str.length()][str.length()];
+        String str = "bacacbaa";
+        int[][]dp = new int[str.length()][str.length()];
 
         // for(int[] d : dp) {
         //     Arrays.fill(d, 0);
         // }
 
         //System.out.println(lpss(str, 0, str.length()-1, dp));
-        //System.out.println(lpss_tab(str, 0, str.length() - 1, dp));
-        System.out.println(lpss_dp(str, 0, str.length() - 1, dp));
-        //display2D(dp);
+        int ans = lpss_tab(str, 0, str.length() - 1, dp);
+
+        //System.out.println(lpss_dp(str, 0, str.length() - 1, dp));
+        display2D(dp);
+        System.out.println(lpsss(str, dp, 0, str.length() - 1));
 
     }
 
@@ -66,6 +68,24 @@ public class stringsetl1 {
             }
         }
         return dp[I][J];
+    }
+
+    //find the string obtained from lpss using reverse engineering
+
+    public static String lpsss(String s, int[][] dp, int i, int j) {
+        if(i >= j) {
+            return (i == j) ? s.charAt(i) + "" : "";
+        }
+
+        // String ans = "";
+
+        if(s.charAt(i) == s.charAt(j)) {
+            return s.charAt(i) + lpsss(s, dp, i + 1, j - 1) + s.charAt(j);
+        } else {
+            if(dp[i + 1][j] > dp[i][j - 1]) {
+                return lpsss(s, dp, i + 1, j);
+            } else return lpsss(s, dp, i, j - 1);
+        }
     }
 
     //find the string obtained from longest palindrome subsequence
@@ -381,10 +401,131 @@ public class stringsetl1 {
 
     }
 
+    //=============================================================================
+    //longest common substring
+
+    public static void longestCommonSusbtring() {
+        String s1 = "abcdef";
+        String s2 = "acdefgh";
+
+        int[][] dp = new int[s1.length() + 1][s2.length() + 1];
+        System.out.println(lcs(s1, s2, dp));
+        display2D(dp);
+    }
+
+    public static String lcs(String s1, String s2, int[][] dp) {
+        int N = s1.length();
+        int M = s2.length();
+        int si = 0;
+        int ei = 0;
+        int len = 0;
+        boolean check = false;
+        for(int n = 0; n <= N; n++) {
+            for(int m = 0; m <= M; m++) {
+                if(m == 0 || n == 0) {
+                    dp[n][m] = 0;
+                    continue;
+                }
+
+
+                if(s1.charAt(n - 1) == s2.charAt(m - 1)) {
+                    dp[n][m] = 1 + dp[n - 1][m - 1];
+                } else {
+                    dp[n][m] = 0;
+                }
+
+                if(check == false && len < dp[n][m]) {
+                    si = n;
+                    check = true;
+                } else if(check && len < dp[n][m]) {
+                    ei = n;
+                }
+            }
+        }
+
+        System.out.println(ei - si - 1);
+
+        return s1.substring(si + 1, ei);
+    }
+
+
+    //==================================================================================================
+
+    public static void maxDotProduct(int[] nums1, int[] nums2) {
+        int n = nums1.length;
+        int m = nums2.length;
+        int[][] dp = new int[n + 1][m + 1];
+        
+        for(int[]d : dp) {
+            Arrays.fill(d, -(int)1e9);
+        }
+        
+        System.out.println(mdp_dp(nums1, nums2, n, m, dp));
+        display2D(dp);
+    }
+    
+    public static int maximum(int...arr) {
+        int max = arr[0];
+        for(int ele : arr) {
+            max = Math.max(ele, max);
+        }
+        
+        return max;
+    }
+    
+    public static int subseq(int[] nums1, int[] nums2, int n, int m, int[][] dp) {
+        if(n == 0 || m == 0) {
+            return dp[n][m] = -(int)1e8;
+        }
+        
+        if(dp[n][m] != -(int)1e9) {
+            return dp[n][m];
+        }
+        
+        int val = nums1[n - 1] * nums2[m - 1];
+        
+        int accepted = subseq(nums1, nums2, n - 1, m - 1, dp) + val;
+        int a = subseq(nums1, nums2, n, m - 1, dp);
+        int b = subseq(nums1, nums2, n - 1, m, dp);
+        
+        int max = maximum(accepted, a, b, val);
+        
+        return dp[n][m] = max;
+    }
+
+
+    public static int mdp_dp(int[] nums1, int[] nums2, int N, int M, int[][] dp) {
+        for(int n = 0; n <= N; n++) {
+            for(int m = 0; m <= M; m++) {
+                if(m == 0 || n == 0) {
+                    dp[n][m] = -(int)1e8;
+                    continue;
+                }
+
+                int val = nums1[n - 1] * nums2[m - 1];
+        
+                int accepted = dp[n - 1][m - 1] + val;
+                int a = dp[n][m - 1]; // subseq(nums1, nums2, n, m - 1, dp);
+                int b = dp[n - 1][m]; // subseq(nums1, nums2, n - 1, m, dp);
+        
+                int max = maximum(accepted, a, b, val);
+        
+                dp[n][m] = max;
+            }
+        }
+
+        return dp[N][M];
+    }
+
+
     public static void main(String[] args) {
         //longestPalindromicSubsequnce();
         //longestPalindromicSubstring();
         //longestCommonSubsequence();
         //minDistance("saturday", "sunday"); //edit distance lc 72
+        //longestCommonSusbtring();
+        int[] nums1 = {2, 1, -2, 5};
+        int[] nums2 = {3, 0, -6};
+        maxDotProduct(nums1, nums2);
     }
 }

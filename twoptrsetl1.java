@@ -489,7 +489,7 @@ public class twoptrsetl1 {
 
 
     //===============================================================================================
-
+    //decode ways lc 91
     public static void numDecodings(String s) {
         int[]dp = new int[s.length() + 1];
         //Arrays.fill(dp , -1);
@@ -559,12 +559,58 @@ public class twoptrsetl1 {
             dp[n] = count;
 
         }
-        
+
         return dp[N];
     }
 
     //===============================================================================================
+
+    public static void fun8() {
+        int n = 5;
+        int k = 3;
+        int[][] dp = new int[n + 1][k + 1];
+        //System.out.println(divideInK(n, k, dp));
+        System.out.println(divideInK_mem(n, k, dp));
+        display2D(dp);
+
+    }
+
+    public static int divideInK(int n, int k, int[][] dp) {
+        if(n == k || k == 1) {
+            return dp[n][k] = 1;
+        }
+
+        if(dp[n][k] != 0) {
+            return dp[n][k];
+        }
+
+        int selfSet = divideInK(n - 1, k - 1, dp);
+        int partOfAnotherSet = divideInK(n - 1, k, dp) * k;
+
+        return dp[n][k] = selfSet + partOfAnotherSet;
+    }  
     
+    
+    public static int divideInK_mem(int N, int K, int[][] dp) {
+        for(int n = 1; n <= N; n++) {
+            for(int k = 1; k <= K; k++) {
+                if(n == 1 || n == k) {
+                    dp[n][k] = 1;
+                    continue;
+                }    
+
+                if(k > n) break;
+
+            int selfSet = dp[n - 1][k - 1];
+            int partOfAnotherSet = dp[n - 1][k] * k;
+            
+            dp[n][k] = selfSet + partOfAnotherSet;
+
+            }
+        }
+
+        return dp[N][K];
+    }
     
     public static void main(String[] args) {
         //fun(); // fibonacci
@@ -575,6 +621,7 @@ public class twoptrsetl1 {
         //fun5(); //maze path with min sum
         //fun6(); //friendsPair
         //fun7(); //goldmine gfg
-        numDecodings("226");
+        //numDecodings("226");
+        fun8(); // n in k grps
     }
 }
