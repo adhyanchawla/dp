@@ -297,6 +297,11 @@ public class stringsetl1 {
 
     //===============================================================================================================================
     //lc 583. deletion operation of two strings
+
+    //method 2: think about lcss 
+    //find lcss : then n + m - 2 * lcss will give the ans
+
+    //method 1
     public static int minDistance2(String word1, String word2) {
         int n = word1.length(), m = word2.length();
         int[][] dp = new int[n + 1][m + 1];
@@ -450,6 +455,7 @@ public class stringsetl1 {
 
 
     //==================================================================================================
+    // lc 1458
 
     public static void maxDotProduct(int[] nums1, int[] nums2) {
         int n = nums1.length;
@@ -472,7 +478,7 @@ public class stringsetl1 {
         
         return max;
     }
-    
+    //lc 1458    
     public static int subseq(int[] nums1, int[] nums2, int n, int m, int[][] dp) {
         if(n == 0 || m == 0) {
             return dp[n][m] = -(int)1e8;
@@ -493,7 +499,7 @@ public class stringsetl1 {
         return dp[n][m] = max;
     }
 
-
+    // lc 1458 using tabulation
     public static int mdp_dp(int[] nums1, int[] nums2, int N, int M, int[][] dp) {
         for(int n = 0; n <= N; n++) {
             for(int m = 0; m <= M; m++) {
@@ -516,6 +522,67 @@ public class stringsetl1 {
 
         return dp[N][M];
     }
+
+
+    //=====================================================================================================
+
+    public static int numDistinct(String s, String t) {
+        int n = s.length(), m = t.length();
+        int[][] dp = new int[n + 1][m + 1];
+        
+        for(int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        return distinct(s, t, n, m, dp);
+    }
+    
+    //all cells are not visited as some cells are backtracked
+    public static int distinct(String s1, String s2, int n, int m, int[][] dp) {
+        if(n == 0 || m == 0) {
+            return dp[n][m] = (m == 0) ? 1 : 0;
+        }
+        
+        if(m > n) {
+            return dp[n][m] = 0;
+        }
+        
+        
+        if(dp[n][m] != -1) {
+            return dp[n][m];
+        }
+        
+        if(s1.charAt(n - 1) == s2.charAt(m - 1)) {
+            return dp[n][m] = distinct(s1, s2, n - 1, m - 1, dp) + distinct(s1, s2, n - 1, m, dp);
+        } else {
+            return dp[n][m] = distinct(s1, s2, n - 1, m, dp);
+        }
+    }
+
+
+    //tabulation slower than memoization as it visits all the cells
+    public static int dis_tab(String s1, String s2, int N, int M, int[][] dp) {
+        for(int n = 0; n <= N; n++) {
+            for(int m = 0; m <= M; m++) {
+                if(m == 0 || n == 0 || m > n) {
+                    dp[n][m] = (m == 0) ? 1 : 0;
+                }
+
+                int a = dp[n - 1][m - 1];
+                int b = dp[n - 1][m];
+
+                if(s1.charAt(n - 1) == s2.charAt(m - 1)) {
+                    dp[n][m] = a + b;
+                } else {
+                    dp[n][m] = b;
+                }
+            }
+        }
+
+        return dp[N][M];
+    }
+
+    //=====================================================================================================
 
 
     public static void main(String[] args) {
