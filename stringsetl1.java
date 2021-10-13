@@ -649,7 +649,188 @@ public class stringsetl1 {
         return dp[I][J];
     }
 
+    //=========================================================================================================================
+    //palindrome partitioning lc 132
+    //min cut
 
+    public static int minCut(String s)  {
+        int n = s.length();
+        boolean [][] isPalDP = new boolean[s.length()][s.length()];
+        for(int gap = 0; gap < n; gap++) {
+            for(int i = 0, j = gap; i < n && j < n; i++, j++) {
+                if(gap == 0) {
+                    isPalDP[i][j] = true;
+                } else if(gap == 1) {
+                    if(s.charAt(i) == s.charAt(j)) {
+                        isPalDP[i][j] = true;
+                    }
+                }
+                else if(s.charAt(i) == s.charAt(j) && isPalDP[i + 1][j - 1]) {
+                    isPalDP[i][j] = true;
+                }
+            }
+        }
+    
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        return minCut(s, 0, isPalDP, dp);
+    }
+
+    public static int minCut(String s, int si, boolean [][] isPalDP, int[] dp) {
+        if(isPalDP[si][s.length() - 1]) {
+            return dp[si] = 0;
+        }   
+        
+        if(dp[si] != -1) {
+            return dp[si];
+        }
+        
+        int min = (int)1e8;
+        for(int cut = si; cut < s.length(); cut++) {
+            if(isPalDP[si][cut]) {
+                min = Math.min(min, minCut(s, cut + 1, isPalDP, dp) + 1);
+            }
+        }
+        
+        return dp[si] = min;
+    }
+
+    //=========================================================================================================================
+    //WildCard Matching lc
+
+    public static String removeStar(String str) {
+        if(str.length() == 0) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(str.charAt(0));
+        
+        int i = 1;
+        while(i < str.length()) {
+            while(i < str.length() && sb.charAt(sb.length() - 1) == '*' && str.charAt(i) == '*') {
+                i++;
+            }
+            
+            if(i < str.length()) {
+                sb.append(str.charAt(i));
+            }
+            i++;
+        }
+        
+        return sb.toString();
+    }
+    
+    public static boolean isMatch1(String s, String p) {
+        p = removeStar(p);
+        int[][] dp = new int[s.length() + 1][p.length() + 1];
+        
+        for(int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        int n = s.length(), m = p.length();
+        
+        return check(s, p, n, m, dp) == 1;
+    }
+    
+    public static int check1(String s, String p, int n, int m, int[][] dp) {
+        if(m == 0 || n == 0) {
+            if(m == 0 && n == 0)  return dp[n][m] = 1;
+            else if(m == 1 && p.charAt(m - 1) == '*') return dp[n][m] = 1;
+            else return dp[n][m] = 0;
+        }
+        
+        if(dp[n][m] != -1) {
+            return dp[n][m];
+        }
+        
+        char ch1 = s.charAt(n -1);
+        char ch2 = p.charAt(m - 1);
+        
+        if(ch1 == ch2 || ch2 == '?') {
+            return dp[n][m] = check1(s, p, n - 1, m - 1, dp);
+        } else if(ch2 == '*') {
+            boolean res = false;
+            res = res || check1(s, p, n - 1, m, dp) == 1; //star matched with current character
+            res = res || check1(s, p, n, m - 1, dp) == 1; //star matched with empty string
+            return dp[n][m] = (res == true) ? 1 : 0;
+        } else {
+            return dp[n][m] = 0;
+        }
+    }
+
+    //=========================================================================================================================
+    //regular expression matching lc
+    public static String removeStars(String s) {
+        if(s.length() == 0) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(s.charAt(0));
+        
+        int i = 1;
+        while(i < s.length()) {
+            while(i < s.length() && sb.charAt(sb.length() - 1) == '*' && s.charAt(i) == '*') {
+                i++;
+            }
+            
+            if(i < s.length()) {
+                sb.append(s.charAt(i));
+            }
+            
+            i++;
+        }
+        
+        return sb.toString();
+    }
+    
+    public static boolean isMatch(String s, String p) {
+        p = removeStars(p);
+        int n = s.length(), m = p.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for(int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        return check(s, p, n, m, dp) == 1;
+    }
+    
+    public static int check(String s, String p, int n, int m, int[][] dp) {
+            if(m == 0 && n == 0) {
+                return dp[n][m] = 1;
+            } 
+            if(m == 0){
+                return dp[n][m] = 0;
+            }
+        
+        
+        if(dp[n][m] != -1) {
+            return dp[n][m];
+        }
+        
+        char ch1 = n > 0 ? s.charAt(n - 1) : '$';
+        char ch2 = p.charAt(m - 1);
+        
+        if(ch1 != '$' && (ch1 == ch2 || ch2 == '.')) {
+            return dp[n][m] = check(s, p, n - 1, m - 1, dp);
+        } else if(ch2 == '*') {
+            boolean res = false;
+            if(m > 1 && n > 0 && (p.charAt(m - 2) == '.' || s.charAt(n - 1) == p.charAt(m - 2))) {
+                res = res || check(s, p, n - 1, m, dp) == 1;
+            }
+            res = res || check(s, p, n, m - 2, dp) == 1;
+            return dp[n][m] = (res) ? 1 : 0;   
+        } else {
+            return dp[n][m] = 0;
+        }
+    }
+
+
+
+
+    //==========================================================================================================================
     public static void main(String[] args) {
         //longestPalindromicSubsequnce();
         //longestPalindromicSubstring();
