@@ -583,6 +583,71 @@ public class stringsetl1 {
     }
 
     //=====================================================================================================
+    //Count Palindrome sequences
+    //https://practice.geeksforgeeks.org/problems/count-palindromic-subsequences/1#
+    static int m = (int)(1e9 + 7);
+    public static void countPS(String str)
+    {
+        if(str.length() == 0) {
+            return;
+        }
+        
+        int n = str.length();
+        
+        long[][] dp = new long[n][n];
+        
+        for(long[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        System.out.println(countP_dp(str, 0, n - 1, dp));
+        // Your code here
+    }
+    
+    
+    public static long countP(String s, int i, int j, long[][] dp) {
+        if(i >= j) {
+            return dp[i][j] = (i == j) ? 1 : 0;
+        }
+        
+        if(dp[i][j] != -1) {
+            return dp[i][j];
+        }
+        
+        long common = countP(s, i + 1, j - 1, dp);
+        long excFirst = countP(s, i + 1, j, dp);
+        long excLast = countP(s, i, j - 1, dp);
+        
+        if(s.charAt(i) == s.charAt(j)) {
+            return dp[i][j] = (excFirst + excLast + 1) % m;
+        } else {
+            return dp[i][j] = (excFirst + excLast - common + m) % m;
+        }
+    }
+
+
+    public static long countP_dp(String s, int I, int J, long[][] dp) {
+        int n = s.length();
+        for(int gap = 0; gap < n; gap++) {
+            for(int i = 0, j = gap; j < n && i < n; j++, i++) {
+                if(i >= j) {
+                    dp[i][j] = (i == j) ? 1 : 0;
+                    continue;
+                }
+
+                long common = dp[i + 1][j - 1];
+                long excFirst = dp[i + 1][j]; // countP(s, i + 1, j, dp);
+                long excLast = dp[i][j - 1]; //countP(s, i, j - 1, dp);
+        
+                if(s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = (excFirst + excLast + 1) % m;
+                } else {
+                    dp[i][j] = (excFirst + excLast - common + m) % m;
+                }                
+            }
+        }
+        return dp[I][J];
+    }
 
 
     public static void main(String[] args) {
@@ -591,8 +656,9 @@ public class stringsetl1 {
         //longestCommonSubsequence();
         //minDistance("saturday", "sunday"); //edit distance lc 72
         //longestCommonSusbtring();
-        int[] nums1 = {2, 1, -2, 5};
-        int[] nums2 = {3, 0, -6};
-        maxDotProduct(nums1, nums2);
+        // int[] nums1 = {2, 1, -2, 5};
+        // int[] nums2 = {3, 0, -6};
+        // maxDotProduct(nums1, nums2);
+        countPS("abbacba");
     }
 }
