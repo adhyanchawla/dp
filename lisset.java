@@ -46,6 +46,73 @@ public class lisset {
         return omax ;
     }
 
+    //=============================================================================
+
+
+    public static int LIS_rec(int[] nums, int ei, int[] dp) {
+
+        if(dp[ei] != -1) {
+            return dp[ei];
+        }
+
+        int count = 1;
+        for(int i = ei - 1; i >= 0; i--) {
+            if(nums[i] < nums[ei])
+            count = Math.max(count, LIS_rec(nums, i, dp));
+        }
+
+        return dp[ei] = count + 1;
+    }
+
+    public static void LISRec() {
+        int maxLen = 1;
+        int[] nums = {1, 15, 33, 51, 45, 100, 18, 9};
+        int[] dp = new int[nums.length];
+        for(int i = 0; i < nums.length; i++) {
+            maxLen = Math.max(maxLen, LIS_rec(nums, i, dp));
+        }
+
+        System.out.println(maxLen);
+    }
+
+    //obtain the string containing the LIS
+    //reverse engineering
+
+    public static void LISString() {
+        int[] nums = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15,14};
+        int[] dp = new int[nums.length];
+        dp = LIS(nums, dp);
+        int dpMax = 0;
+        int maxIdx = 0;
+        int max = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(dp[i] > dpMax) {
+                dpMax = dp[i];
+                maxIdx = i;
+            }
+        }
+
+        String ans = LIS_obtain(nums, dp, dpMax, maxIdx);
+        System.out.println(ans);
+    }
+
+    public static String LIS_obtain(int[] nums, int[] dp, int dpMax, int maxIdx) {
+        int n = nums.length;
+        String s = dpMax + " ";
+        for(int i = maxIdx; i >= 0; i--) {
+            if(nums[i] < nums[maxIdx] && dp[i] == dpMax - 1) {
+                s += nums[i] + " ";
+                dpMax = dp[i];
+                maxIdx = i;
+            }
+        }
+        return s;
+    }
+
+
+
+    //======================================================================================
+
     public static void lis() {
         int[] nums = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15,14};
         int[] dp = new int[nums.length];
@@ -113,6 +180,49 @@ public class lisset {
 
         return nums.length - omax;
     }
+
+    //==========================================================================================================================
+    // LDS -> left to Right
+    public static int[] LDS_LR(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+
+        int maxLen = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[i] < nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+
+            maxLen = Math.max(maxLen, dp[i]);
+        }
+
+        return dp;
+    }
+
+    // LDS -> right to left === LIS
+    public static int[] LDS_RL(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+
+        int maxLen = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i] = 1;
+            for (int j = i + 1; j < n; j++) {
+                if (nums[i] < nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+
+            maxLen = Math.max(maxLen, dp[i]);
+        }
+
+        return dp;
+    }
+
+
     //===========================================================================================================================
     //max sum increasing subsequence
     //https://practice.geeksforgeeks.org/problems/maximum-sum-increasing-subsequence4749/1#
@@ -133,6 +243,61 @@ public class lisset {
 	    }
 	    return msum;
 	}  
+
+    //===========================================================================================
+    //maximum sum bitonic subsequence
+        public static int[] LIS(int[] nums, int[] dp) {
+        //int[]dp = new int[nums.length];
+        // int max = 0;
+        for(int i = 0; i < nums.length; i++) {
+            //dp[i] = nums[i];
+            for(int j = i - 1; j >= 0; j--) {
+                if(nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + nums[i]);
+                }
+            }
+            //max = Math.max(max, dp[i]);
+        }
+        
+        return dp;
+    }
+    
+    public static int[] LIS1(int[] nums, int[] dp) {
+        //int[]dp = new int[nums.length];
+        // int max = 0;
+        for(int i = nums.length - 1; i >= 0; i--) {
+            //dp[i] = nums[i];
+            for(int j = i + 1; j < nums.length; j++) {
+                if(nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + nums[i]);
+                }
+            }
+            //max = Math.min(max, dp[i]);
+        }
+        
+        return dp;
+    }
+    
+    public static int maxSumBS(int arr[], int n)
+    {
+        int[] d1 = new int[n];
+        int[] d2 = new int[n];
+        
+        for(int i = 0; i < n; i++){
+            d1[i] = arr[i];
+            d2[i] = arr[i];
+        }
+        
+        
+        d1 = LIS(arr, d1);
+        d2 = LIS1(arr, d2);
+        
+        int max = 0;
+        for(int i = 0; i < n; i++) {
+            max = Math.max(max, d1[i] + d2[i] - arr[i]);
+        }
+        return max;
+    }
 
     //===========================================================================================
     //longest decreasing subsequence
@@ -232,9 +397,43 @@ public class lisset {
         
         return max;
     }
+
+    //===================================================================================================
+    //lc 673 No of LIS 
+    public int findNumberOfLIS(int[] nums) {
+        int[] count = new int[nums.length];
+        int[] dp = new int[nums.length];
+        
+        int maxLen = 0, maxCount = 0;
+        
+        for(int i = 0; i < nums.length; i++) {
+            dp[i] = 1;
+            count[i] = 1;
+            for(int j = i - 1; j >= 0; j--) {
+                if(nums[i] > nums[j]) {
+                    if(dp[j] + 1 > dp[i]) {
+                        dp[i] = dp[j] + 1;
+                        count[i] = count[j];
+                    } else if(dp[j] + 1 == dp[i]) {
+                        count[i] += count[j];
+                    }
+                }   
+            }
+            if(maxLen < dp[i]) {
+                maxLen = dp[i];
+                maxCount = count[i];
+            } else if(maxLen == dp[i]) {
+                maxCount += count[i];
+            }
+        }
+        return maxCount;
+    }
+
+    //==============================================================================================
     public static void main(String[] args) {
         //lis();
         //buildingBridges();
-        lds();
+        //lds();
+        LISString();
     }
 }
