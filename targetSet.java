@@ -189,6 +189,121 @@ public class targetSet {
     }
 
     //================================================================================================
+    // https://practice.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1#
+    public static int knapSack(int W, int wt[], int val[], int n) 
+    { 
+         // your code here 
+         int[][] dp = new int[n + 1][W + 1];
+         for(int[] d : dp) {
+             Arrays.fill(d, -1);
+         }
+         int ans = knapSack(wt, val, n, W, dp);
+         return ans;
+    } 
+    
+    public static int knapSack(int[] wt, int[] val, int n, int W, int[][] dp) {
+        if(W == 0 || n == 0) {
+            return dp[n][W] = 0;
+        }
+        
+        if(dp[n][W] != -1) {
+            return dp[n][W];
+        }
+        
+        int maxVal = 0;
+        if(W - wt[n - 1] >= 0) {
+            maxVal = Math.max(maxVal, knapSack(wt, val, n - 1, W - wt[n - 1], dp) + val[n - 1]);
+        }
+        
+        maxVal = Math.max(maxVal, knapSack(wt, val, n - 1, W, dp));
+        
+        return dp[n][W] = maxVal;
+    }
+
+    //============================================================================================================
+    // https://practice.geeksforgeeks.org/problems/knapsack-with-duplicate-items4201/1#
+    //unbounded knapsack
+    public static int knapSack(int N, int W, int val[], int wt[])
+    {
+        int[][] dp = new int[N + 1][W + 1];
+        for(int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        int ans = uknapSack(val, wt, N, W, dp);
+        return ans;
+    }
+
+    public static int uknapsack_tab(int[] val, int[] wt, int N, int WI, int[] dp) {
+        for(int W = 0; W <= WI; W++) {
+            for(int i = 0; i < N; i++) {
+                if(W - wt[i] >= 0) {
+                    dp[W] = Math.max(dp[W - wt[i]] + val[i], dp[W]);
+                }
+            }
+        }
+
+        return dp[WI];
+    }
+    
+    public static int uknapSack(int[] val, int[] wt, int n, int W, int[][] dp) {
+        if(n == 0 || W == 0) {
+            return dp[n][W] = 0;
+        }
+        
+        if(dp[n][W] != -1) {
+            return dp[n][W];
+        }
+        
+        int maxVal = 0;
+        
+        if(W - wt[n - 1] >= 0) {
+            maxVal = Math.max(maxVal, uknapSack(val, wt, n, W - wt[n - 1], dp) + val[n - 1]);
+        }
+        
+        maxVal = Math.max(maxVal, uknapSack(val, wt, n - 1, W, dp));
+        
+        return dp[n][W] = maxVal;
+    }
+
+    //============================================================================================================
+    // lc 494: Partition into equal subsets
+    public static boolean canPartition(int[] nums) {
+        int sum = 0;
+        for(int ele : nums) sum += ele;
+        
+        int n = nums.length;
+        if(n ==  0 || sum % 2 != 0) return false;
+        int[][] dp = new int[n + 1][sum/2 + 1];
+        
+        for(int[] d: dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        
+        return canPartition(nums, n, sum/2, dp) == 1;
+    }
+    
+    public static int canPartition(int[] nums, int n, int tar, int [][] dp) {
+        if(n == 0 || tar == 0) {
+            return dp[n][tar] = (tar == 0) ? 1 : 0;
+        }
+        
+        if(dp[n][tar] != -1) {
+            return dp[n][tar];
+        }
+        
+        boolean res = false;
+        if(tar - nums[n - 1] >= 0) {
+            res = res || canPartition(nums, n - 1, tar - nums[n - 1], dp) == 1;
+        }
+        
+        res = res || canPartition(nums, n - 1, tar, dp) == 1;
+        
+        return dp[n][tar] = (res) ? 1 : 0;
+    }
+
+    //===================================================================================================================
 
     public static void subsetSumSet() {
         int[] coins = {2, 3, 5, 7};
@@ -220,6 +335,7 @@ public class targetSet {
         //System.out.println(permutation_tab(coins, tar, dp));
         //display(dp);
     }
+
 
     public static void main(String[] args) {
         //coinSet();
