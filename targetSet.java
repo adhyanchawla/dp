@@ -305,6 +305,44 @@ public class targetSet {
 
     //===================================================================================================================
 
+    //lc 494 : Target Sum
+    public static int findTargetSumWays(int[] nums, int tar) {
+        int sum = 0;
+        for(int ele : nums) {
+            sum += ele;
+        }
+        
+        if(sum < tar || tar < -sum) return 0;
+        
+        int[][] dp = new int[nums.length + 1][2 * sum + 2];
+        for(int[]d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        return targetSum(nums, tar + sum, nums.length, sum, dp);
+    }
+    
+    public static int targetSum(int[] nums, int tar, int n, int sum, int[][] dp) {
+        if(n == 0) {
+            if(tar == sum) {
+                return dp[n][tar] = 1;
+            }            
+            return dp[n][sum] = 0;
+        }
+        
+        if(dp[n][sum] != -1) {
+            return dp[n][sum];
+        }
+        
+        int count = 0;
+        count += targetSum(nums, tar, n - 1, sum  - nums[n - 1], dp);
+        count += targetSum(nums, tar, n - 1, sum  + nums[n - 1], dp);
+        
+        return dp[n][sum] = count;
+    }
+
+    //===================================================================================================
+
     public static void subsetSumSet() {
         int[] coins = {2, 3, 5, 7};
         int tar = 10;
