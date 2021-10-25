@@ -343,6 +343,10 @@ public class targetSet {
 
     //===================================================================================================
 
+    //back engineering of target sum i.e. obtain the string where the target is achieved
+
+    //===================================================================================================
+
     public static void subsetSumSet() {
         int[] coins = {2, 3, 5, 7};
         int tar = 10;
