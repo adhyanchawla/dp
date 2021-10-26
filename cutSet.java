@@ -115,19 +115,187 @@ public class cutSet {
         return sdp[SI][EI];
     }
 
+    //==============================================================================================
+    // https://www.geeksforgeeks.org/minimum-maximum-values-expression/
+    public static class minMaxPair {
+        int minVal = (int)1e9;
+        int maxVal = -(int)1e9;
+
+        minMaxPair(int minVal, int maxVal) {
+            this.minVal = minVal;
+            this.maxVal = maxVal;
+        }
+
+        minMaxPair(){
+
+        }
+    }
+
+    public static minMaxPair evaluation(minMaxPair lp, minMaxPair rp, char operator) {
+        if(operator == '+') {
+            return new minMaxPair(lp.minVal + rp.minVal, lp.maxVal + rp.maxVal);
+        } else {
+            return new minMaxPair(lp.minVal * rp.minVal, lp.maxVal * rp.maxVal);
+        }
+    }
+
+    public static minMaxPair minMaxEvaluation(String str, int si, int ei, minMaxPair[][] dp) {
+        if(si == ei) {
+            int val = str.charAt(si) - '0';
+            return new minMaxPair(val, val);
+        }
+
+        if(dp[si][ei] != null) {
+            return dp[si][ei];
+        }
+
+        minMaxPair myRes = new minMaxPair();
+        for(int cut = si + 1; cut < ei; cut+=2) {
+            minMaxPair lp = minMaxEvaluation(str, si, cut - 1, dp);
+            minMaxPair rp = minMaxEvaluation(str, cut + 1, ei, dp);
+
+            minMaxPair eval = evaluation(lp, rp, str.charAt(cut));
+
+            myRes.minVal = Math.min(myRes.minVal, eval.minVal);
+            myRes.maxVal = Math.max(myRes.maxVal, eval.maxVal);
+        }
+
+        return dp[si][ei] = myRes;
+    }
+
+    //if operators are + - * /
+    public static minMaxPair evaluation01(minMaxPair lp, minMaxPair rp, char operator) {
+        if(operator == '+') {
+            return new minMaxPair(lp.minVal + rp.minVal, lp.maxVal + rp.maxVal);
+        } else if(operator == '-') {
+            return new minMaxPair(lp.minVal - rp.minVal, lp.maxVal - rp.maxVal);
+        } else if(operator == '*') {
+            return new minMaxPair(lp.minVal * rp.minVal, lp.maxVal * rp.maxVal);
+        } else {
+            return new minMaxPair(lp.minVal / rp.minVal, lp.maxVal / rp.maxVal);
+        }
+    }
+
+    public static void minMaxEval() {
+        String str = "1+2*3+4*5";
+        int n = str.length();
+        minMaxPair[][] dp = new minMaxPair[n][n];
+
+        minMaxPair res = minMaxEvaluation(str, 0, str.length() - 1, dp);
+
+        System.out.println("MinVal : " + res.minVal);
+        System.out.println("MaxVal : " + res.maxVal);
+    }
+
+    //==================================================================================================
+    //boolean parenthesis
+    // https://practice.geeksforgeeks.org/problems/boolean-parenthesization5610/1
+
+    public static class bpair{
+        int tCount = 0;
+        int fCount = 0;
+
+        bpair(int tCount, int fCount) {
+            this.tCount = tCount;
+            this.fCount = fCount;
+        }
+
+        bpair() {
+
+        }
+    }
+
+    public static void Evaluation(bpair lp, bpair rp, char operator, bpair res) {
+        int totalTF = (lp.tCount + lp.fCount) * (rp.fCount + rp.tCount);
+        if(operator == '|') {
+            int totalF = (lp.fCount * rp.fCount);
+            res.fCount += totalF;
+            res.tCount += totalTF - totalF;
+        } else if(operator == '&') {
+            int totalT = (lp.tCount * rp.tCount);
+            res.tCount += totalT;
+            res.fCount += totalTF - totalT;
+        } else {
+            int totalT = (lp.tCount * rp.fCount) + (lp.fCount * rp.tCount);
+            res.tCount += totalT;
+            res.fCount += totalTF - totalT;
+        }
+    }
+
+    public static bpair boolParenthesis(String str, int si, int ei, bpair[][] dp) {
+        if(si == ei) {
+            int t = str.charAt(si) == 'T' ? 1 : 0;
+            int f = str.charAt(si) == 'F' ? 1 : 0;
+
+            bpair base = new bpair(t, f);
+            return dp[si][ei] = base;
+        }
+
+        if(dp[si][ei] != null) {
+            return dp[si][ei];
+        }
+
+        bpair ans = new bpair(0, 0);
+
+        for(int cut = si + 1; cut < ei; cut += 2) {
+            bpair left = boolParenthesis(str, si, cut - 1, dp);
+            bpair right = boolParenthesis(str, cut + 1, ei, dp);
+
+            char operator = str.charAt(cut);
+            Evaluation(left, right, operator, ans);
+        }
+
+        return dp[si][ei] = ans;
+    }
+
+    //================================================================================================================
+    //lc 312 burst balloons
+    public int maxCoins(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+        for(int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        return maxCoins(nums, 0, nums.length - 1, dp);
+    }
+    
+    public int maxCoins(int[] nums, int si, int ei, int[][] dp) {
+        if(dp[si][ei] != -1) {
+            return dp[si][ei];
+        }
+        
+        int lval = (si == 0) ? 1 : nums[si - 1];
+        int rval = (ei == nums.length - 1) ? 1 : nums[ei + 1];
+        
+        int maxResult = 0;
+        for(int cut = si; cut <= ei; cut++) {
+            int left = (si == cut) ? 0 : maxCoins(nums, si, cut - 1, dp);
+            int right = (ei == cut) ? 0 : maxCoins(nums, cut + 1, ei, dp);
+            
+            int myResult = left + right + lval * nums[cut] * rval;
+            maxResult = Math.max(maxResult, myResult);
+        }
+        
+        return dp[si][ei] = maxResult;
+    }
+
+    //=============================================================================================================
+
     public static void cutSet01() {
         int[] arr = {4, 2, 3, 2, 3, 5, 4};
         int n = arr.length;
         int[][] dp = new int[n][n];
-        // for(int []d : dp) {
-        //     Arrays.fill(d, -1);
-        // }
+        for(int []d : dp) {
+            Arrays.fill(d, -1);
+        }
 
-        //System.out.println(mcm_memo(arr, 0, arr.length - 1, dp));
-        System.out.println(mcm_tabu(arr, 0, n - 1, dp));
+        System.out.println(mcm_memo(arr, 0, arr.length - 1, dp));
+        //System.out.println(mcm_tabu(arr, 0, n - 1, dp));
         display2D(dp);
     }
     public static void main(String[] args) {
-        cutSet01();
+        //cutSet01();
+        minMaxEval();
     }
 }
