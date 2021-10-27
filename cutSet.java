@@ -399,6 +399,86 @@ public class cutSet {
     }
 
     //======================================================================================================
+    // lc 1039
+    public int minScoreTriangulation(int[] values) {
+        int n = values.length;
+        int[][] dp = new int[n][n];
+        for(int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        
+        return minScoreTriangulation(values, 0, n - 1, dp);
+    }
+    
+    public int minScoreTriangulation(int[] values, int si, int ei, int[][] dp) {
+        if(ei - si <= 1) {
+            return dp[si][ei] = 0;
+        }
+        
+        if(dp[si][ei] != -1) {
+            return dp[si][ei];
+        }
+        
+        int minRes = (int)1e9;
+        for(int cut = si + 1; cut < ei; cut++) {
+            int leftRes = minScoreTriangulation(values, si, cut, dp);
+            int rightRes = minScoreTriangulation(values, cut, ei, dp);
+            
+            int ans = leftRes + values[si] * values[cut] * values[ei] + rightRes;
+            minRes = Math.min(ans, minRes);
+        }
+        
+        return dp[si][ei] = minRes;
+    }
+
+    //=============================================================================================
+    //lc 140 word break
+    
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        int n = s.length();
+        HashSet<String> hs = new HashSet<>();
+        
+        int len = 0;
+        for(String str : wordDict) {
+            len = Math.max(len, str.length());
+            hs.add(str);
+        }
+        
+        boolean[] dp = new boolean[n + 1];
+        
+        dp[0] = true;
+        for(int i = 0; i < n; i++) {
+            if(!dp[i]) continue;
+            
+            for(int l = 1; l <= len && i + l <= n; l++) {
+                if(hs.contains(s.substring(i, i + l))) dp[i + l] = true;
+            }
+        }
+        
+        //System.out.println(dp[n]);
+        List<String> ans = new ArrayList<>();
+        if(!dp[n]) return ans;
+        
+        dfs(s, 0, len, "", ans, hs, dp);
+        return ans;
+    }
+    
+    public void dfs(String s, int idx, int len, String asf, List<String> ans, HashSet<String> hs, boolean[] dp) {
+        if(idx == s.length()) {
+            ans.add(asf.substring(0, asf.length() - 1));
+            return;
+        }
+        
+        for(int l = 1; l <= len && idx + l <= s.length(); l++) {
+            if(dp[idx + l] && hs.contains(s.substring(idx, idx + l))) {
+                dfs(s, idx + l, len, asf + s.substring(idx, idx + l) + " ", ans, hs, dp);
+            }
+        }
+    }
+
+    //==================================================================================================================
+
+
     public static void main(String[] args) {
         //cutSet01();
         //minMaxEval();
