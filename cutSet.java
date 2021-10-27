@@ -338,7 +338,67 @@ public class cutSet {
     }
 
     //============================================================================================
+    //lc 95
+    public static class TreeNode {
+             int val;
+             TreeNode left;
+             TreeNode right;
+             TreeNode() {}
+             
+             TreeNode(int val) 
+             { this.val = val; }
+             
+             TreeNode(int val, TreeNode left, TreeNode right) {
+                 this.val = val;
+                 this.left = left;
+                 this.right = right;
+             }
+        }
 
+    public static void generateAllTrees(int num, List<TreeNode> left, List<TreeNode> right, List<TreeNode> ans) {
+        if(left.size() != 0 && right.size() != 0) {
+            for(int i = 0; i < left.size(); i++) {
+                for(int j = 0; j < right.size(); j++) {
+                    TreeNode root = new TreeNode(num);
+                    root.left = left.get(i);
+                    root.right = right.get(j);
+                    ans.add(root);
+                }
+            }
+        } else if(left.size() != 0) {
+            for(int i = 0; i < left.size(); i++) {
+                TreeNode root = new TreeNode(num);
+                root.left = left.get(i);
+                ans.add(root);
+            }
+        } else if(right.size() != 0) {
+            for(int j = 0; j < right.size(); j++) {
+                TreeNode root = new TreeNode(num);
+                root.right = right.get(j);
+                ans.add(root);
+            }
+        } else {
+            ans.add(new TreeNode(num));
+        }
+    }
+    
+    public static List<TreeNode> generateTrees(int si, int ei) {
+        List<TreeNode> ans = new ArrayList<>();
+        for(int cut = si; cut <= ei; cut++) {
+            List<TreeNode> left = generateTrees(si, cut - 1);
+            List<TreeNode> right = generateTrees(cut + 1, ei);
+            
+            generateAllTrees(cut, left, right, ans);
+        }
+        
+        return ans;
+    }
+    
+    public static List<TreeNode> generateTrees(int n) {
+        return generateTrees(1, n);
+    }
+
+    //======================================================================================================
     public static void main(String[] args) {
         //cutSet01();
         //minMaxEval();
