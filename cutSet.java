@@ -70,6 +70,19 @@ public class cutSet {
         return dp[SI][EI];
     }
 
+    public static void cutSet01() {
+        int[] arr = {4, 2, 3, 2, 3, 5, 4};
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        for(int []d : dp) {
+            Arrays.fill(d, -1);
+        }
+
+        System.out.println(mcm_memo(arr, 0, arr.length - 1, dp));
+        //System.out.println(mcm_tabu(arr, 0, n - 1, dp));
+        display2D(dp);
+    }
+
     //=================================================================================================
     // https://practice.geeksforgeeks.org/problems/brackets-in-matrix-chain-multiplication1024/1#
     //matrix chain order
@@ -281,21 +294,54 @@ public class cutSet {
     }
 
     //=============================================================================================================
+    // https://www.geeksforgeeks.org/optimal-binary-search-tree-dp-24/
+    //OBST
+    public static int sumOfFreq(int si, int ei, int[] freq) {
+        int sum = 0;
+        for(int i = si; i <= ei; i++) {
+            sum += freq[i];
+        }
 
-    public static void cutSet01() {
-        int[] arr = {4, 2, 3, 2, 3, 5, 4};
-        int n = arr.length;
+        return sum;
+    }
+
+    public static int OBST_memo(int[] nodes, int[] freq, int si, int ei, int[][] dp) {
+        if(dp[si][ei] != -1) {
+            return dp[si][ei];
+        }
+
+        int minRes = (int)1e9;
+        int sum = 0;
+        for(int cut = si; cut <= ei; cut++) {
+            int leftTree = (cut == si) ? 0 : OBST_memo(nodes, freq, si, cut - 1, dp); //base case handled
+            int rightTree = (cut == ei) ? 0 : OBST_memo(nodes, freq, cut + 1, ei, dp); //base case handled
+
+            sum += freq[cut];
+            int ans = leftTree + rightTree;
+            minRes = Math.min(minRes, ans);
+        }
+
+        return dp[si][ei] = minRes + sum;
+    }
+
+    public static void obst() {
+        int[] nodes = {10, 12, 20};
+        int[] freq = {34, 8, 50};
+        int n = nodes.length;
         int[][] dp = new int[n][n];
-        for(int []d : dp) {
+
+        for(int[] d : dp) {
             Arrays.fill(d, -1);
         }
 
-        System.out.println(mcm_memo(arr, 0, arr.length - 1, dp));
-        //System.out.println(mcm_tabu(arr, 0, n - 1, dp));
-        display2D(dp);
+        System.out.println(OBST_memo(nodes, freq, 0, n - 1, dp));
     }
+
+    //============================================================================================
+
     public static void main(String[] args) {
         //cutSet01();
-        minMaxEval();
+        //minMaxEval();
+        obst();
     }
 }
